@@ -30,13 +30,15 @@ def encode_image(image_path):
         return base64.b64encode(image_file.read()).decode('utf-8')
 
 def get_temp_img_path():
-    return cache_dir + "/current_view.png"
+    return f"{cache_dir}/current_view.png"
 
 class Browser:
     def __init__(self, start_link, resolution):
         # enable vimium and start browser
         options = webdriver.ChromeOptions()
-        options.add_extension(os.path.dirname(os.path.realpath(__file__)) + "/vimium.crx")
+        options.add_extension(
+            f"{os.path.dirname(os.path.realpath(__file__))}/vimium.crx"
+        )
         self.driver = webdriver.Chrome(options=options)
         # set window size and start link
         self.driver.set_window_size(resolution[0], resolution[1])
@@ -83,16 +85,13 @@ class Browser:
         # image.save(get_temp_img_path())
 
 
-    def get_obs_msg(self)-> dict:
+    def get_obs_msg(self) -> dict:
         # base64_image = encode_image(get_temp_img_path())
         base64_image = self.lastest_view
-        msg = {
+        return {
             "type": "image_url",
-            "image_url": {
-              "url": f"data:image/jpeg;base64,{base64_image}"
-            }
+            "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"},
         }
-        return msg
     
     def step(self, action) -> None:
         parts = re.split('(<[^>]+>)', action)
@@ -114,4 +113,3 @@ class Browser:
             self.actions.perform()
         except Exception as e:
             print(e)
-            pass
